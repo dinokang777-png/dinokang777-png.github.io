@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>코드 블루 2026 | 간호사 합격스펙 100인 실증 빅데이터 인텔리전스</title>
+  <meta name="description" content="전국 상급종합병원·대학병원 간호사 합격자 100인의 학점, 어학, 자격증 및 합격 비결을 인터랙티브하게 탐색하는 실증 데이터 허브">
+  <link rel="stylesheet" href="style.css">
+  <!-- QRCode.js for instant QR generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <!-- Chart.js for real-time interactive data analytics -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="bg-glow-1"></div>
+  <div class="bg-glow-2"></div>
+  <div class="bg-glow-3"></div>
+
+  <div class="container">
+    <!-- Executive Header -->
+    <header>
+      <div class="nav-bar">
+        <div class="brand-group">
+          <div class="brand-badge">
+            <span class="pulse-dot"></span>
+            CODE BLUE 2026 · EMPIRICAL DATA INTELLIGENCE
+          </div>
+          <h1 class="header-title">2027 간호사 합격 스펙 & 리얼 취업 빅데이터</h1>
+          <p class="header-subtitle">
+            전국 상급종합병원·빅5 실제 합격생 100인의 스펙 및 전형별 핵심 비결 실증 분석 플랫폼
+          </p>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-matcher" id="btn-matcher">
+            <span>🎯</span> 내 스펙 진단 매칭
+          </button>
+          <button class="btn btn-analytics" id="btn-charts-toggle">
+            <span>📊</span> 분석 차트 허브
+          </button>
+          <button class="btn btn-outline" id="btn-theme-toggle" title="화면 테마 변경">
+            <span id="theme-icon">🌙</span> <span id="theme-text">다크</span>
+          </button>
+          <button class="btn btn-outline" id="btn-export-csv" title="현재 필터링된 데이터 CSV 내보내기">
+            <span>📥</span> CSV 내보내기
+          </button>
+          <button class="btn btn-outline" id="btn-ppt-mode" title="프레젠테이션용 미니멀 뷰 토글">
+            <span>📸</span> PPT 캡처 뷰
+          </button>
+          <button class="btn btn-primary" id="btn-qr-open" title="스마트폰 접속용 QR 생성">
+            <span>📱</span> 모바일 QR
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- KPI Summary Dashboard -->
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label"><span>📊</span> 실증 분석 표본</div>
+        <div class="kpi-val" id="kpi-total">100명</div>
+        <div class="kpi-sub">간준모 합격스펙 전수 전수조사 데이터</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label"><span>🎓</span> 합격자 평균 학점</div>
+        <div class="kpi-val" id="kpi-gpa">3.98 <span class="unit">/ 4.5</span></div>
+        <div class="kpi-sub">상위 10~15% 최빈 밀집 구간</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label"><span>🌐</span> 합격자 평균 어학</div>
+        <div class="kpi-val" id="kpi-toeic">865점</div>
+        <div class="kpi-sub">빅5 합격군 900+ 토익 다수 형성</div>
+      </div>
+      <div class="kpi-card highlight-card">
+        <div class="kpi-label"><span>🩺</span> 자대병원 無 비율 (지자무)</div>
+        <div class="kpi-val" id="kpi-affil-no" style="color: var(--cyan);">67% <span class="unit">(67명)</span></div>
+        <div class="kpi-sub">자대병원 없이 상급종합 돌파한 실증군</div>
+      </div>
+    </section>
+
+    <!-- Collapsible Interactive Analytics Hub (Chart.js) -->
+    <section class="analytics-hub" id="analytics-hub">
+      <div class="analytics-header">
+        <div class="analytics-title">
+          <span class="analytics-icon">📈</span>
+          <h3>실시간 데이터 인사이트 (Interactive Analytics Hub)</h3>
+          <span class="analytics-badge">LIVE INTERACTIVE</span>
+        </div>
+        <button class="btn-close-hub" id="btn-close-hub" title="차트 닫기">&times;</button>
+      </div>
+      <div class="charts-grid">
+        <!-- Chart 1: 학점 vs 토익 점수대 분포 -->
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <h4>🎯 토익 점수대별 표본 분포</h4>
+            <span class="chart-meta">점수 구간별 인원수</span>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="chart-toeic-dist"></canvas>
+          </div>
+        </div>
+
+        <!-- Chart 2: 최다 합격 상급종합병원 TOP 6 -->
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <h4>🏥 최다 합격 상급종합병원 TOP 6</h4>
+            <span class="chart-meta">중복 합격 포함 전수 집계</span>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="chart-hospital-top"></canvas>
+          </div>
+        </div>
+
+        <!-- Chart 3: 자대유 vs 자대무 점유율 -->
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <h4>🩺 출신교 자대병원 유무 비율</h4>
+            <span class="chart-meta">자대병원 有 vs 無</span>
+          </div>
+          <div class="chart-wrapper doughnut-wrapper">
+            <canvas id="chart-affil-doughnut"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Multi-Facet Filter Console -->
+    <section class="filter-console">
+      <div class="search-sort-row">
+        <div class="search-box">
+          <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="text" id="search-input" placeholder="병원명(아산, 삼성, 세브란스 등), 학점, 자격증, 면접/자소서 키워드 검색... (단축키: /)" autocomplete="off">
+          <span class="search-shortcut" title="단축키 / 누르면 검색 포커스">/</span>
+        </div>
+
+        <div class="view-and-sort-group">
+          <!-- View Switcher -->
+          <div class="view-switcher">
+            <button class="view-btn active" id="btn-view-grid" title="카드 그리드 뷰">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+              </svg>
+              <span>카드</span>
+            </button>
+            <button class="view-btn" id="btn-view-table" title="정밀 데이터 테이블 뷰">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+              </svg>
+              <span>테이블</span>
+            </button>
+          </div>
+
+          <!-- Sort Select -->
+          <div class="sort-box">
+            <label for="sort-select" class="sort-label">정렬</label>
+            <select class="sort-select" id="sort-select">
+              <option value="id-asc">등록 번호순</option>
+              <option value="gpa-desc">학점 높은순</option>
+              <option value="toeic-desc">토익 높은순</option>
+              <option value="pass-desc">합격병원 많은순</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Multi-Facet Filter Matrix -->
+      <div class="filter-matrix">
+        <!-- 1. 주요 병원 -->
+        <div class="filter-row">
+          <div class="filter-label">
+            <span class="filter-icon">🏥</span> 주요 병원
+          </div>
+          <div class="filter-pills" id="filter-hospital">
+            <button class="pill active" data-filter-type="hospital" data-val="all">전체보기 (100)</button>
+            <button class="pill" data-filter-type="hospital" data-val="아산">서울아산병원</button>
+            <button class="pill" data-filter-type="hospital" data-val="삼성">삼성서울병원</button>
+            <button class="pill" data-filter-type="hospital" data-val="세브란스">세브란스</button>
+            <button class="pill" data-filter-type="hospital" data-val="서울대">서울대/분당</button>
+            <button class="pill" data-filter-type="hospital" data-val="성모">가톨릭성모</button>
+            <button class="pill" data-filter-type="hospital" data-val="아주대">아주대병원</button>
+            <button class="pill" data-filter-type="hospital" data-val="순천향">순천향대병원</button>
+            <button class="pill" data-filter-type="hospital" data-val="인하대">인하대병원</button>
+            <button class="pill" data-filter-type="hospital" data-val="길병원">가천대길병원</button>
+          </div>
+        </div>
+
+        <!-- 2. 학교 위치 -->
+        <div class="filter-row">
+          <div class="filter-label">
+            <span class="filter-icon">🏫</span> 학교 위치
+          </div>
+          <div class="filter-pills" id="filter-location">
+            <button class="pill active" data-filter-type="location" data-val="all">전체 (서울·지방)</button>
+            <button class="pill" data-filter-type="location" data-val="서울/수도권">📍 서울 · 수도권 (22)</button>
+            <button class="pill" data-filter-type="location" data-val="지방">📍 지방권 (73)</button>
+          </div>
+        </div>
+
+        <!-- 3. 자대병원 유무 -->
+        <div class="filter-row">
+          <div class="filter-label">
+            <span class="filter-icon">🩺</span> 자대병원
+          </div>
+          <div class="filter-pills" id="filter-affiliation">
+            <button class="pill active" data-filter-type="affiliation" data-val="all">전체</button>
+            <button class="pill highlight-pill" data-filter-type="affiliation" data-val="자대무">🔴 자대병원 無 (자대무 67명)</button>
+            <button class="pill" data-filter-type="affiliation" data-val="자대유">🟢 자대병원 有 (자대유 25명)</button>
+          </div>
+        </div>
+
+        <!-- 4. 토익 점수대 -->
+        <div class="filter-row">
+          <div class="filter-label">
+            <span class="filter-icon">🌐</span> 토익 스펙
+          </div>
+          <div class="filter-pills" id="filter-toeic">
+            <button class="pill active" data-filter-type="toeic" data-val="all">전체</button>
+            <button class="pill highlight-pill-amber" data-filter-type="toeic" data-val="무토익">⚡ 무토익 (어학 미기재 16명)</button>
+            <button class="pill" data-filter-type="toeic" data-val="800점대">📘 토익 800점대 (32명)</button>
+            <button class="pill" data-filter-type="toeic" data-val="900점대">🎯 토익 900점대 (21명)</button>
+            <button class="pill" data-filter-type="toeic" data-val="700점대 이하">📙 토익 700점대 이하 (31명)</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Status & Active Chips Bar -->
+      <div class="filter-status-bar">
+        <div class="filter-count-info">
+          조회된 실증 합격 사례: <strong id="filter-result-count">100</strong>건
+          <span class="filter-active-summary" id="filter-active-summary"></span>
+        </div>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <button class="btn-reset-filter" id="btn-reset-filter">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+              <path d="M3 3v5h5"></path>
+            </svg>
+            필터 초기화
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Spec Content -->
+    <main>
+      <!-- View 1: Spec Cards Grid -->
+      <div class="cards-grid" id="cards-container">
+        <!-- Cards injected by JS -->
+      </div>
+
+      <!-- View 2: High-Density Data Table View -->
+      <div class="table-container" id="table-container" style="display: none;">
+        <div class="table-scroll">
+          <table class="spec-table">
+            <thead>
+              <tr>
+                <th style="width: 70px;">비교</th>
+                <th style="width: 80px;">No</th>
+                <th>대표 합격 병원 및 타이틀</th>
+                <th style="width: 130px;">학점 / 석차</th>
+                <th style="width: 120px;">어학 스펙</th>
+                <th style="width: 140px;">학교/자대 구분</th>
+                <th style="width: 130px;">자격증</th>
+                <th style="width: 110px;">상세 후기</th>
+              </tr>
+            </thead>
+            <tbody id="table-body">
+              <!-- Injected by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Floating Comparison Dock -->
+  <div class="compare-dock" id="compare-dock">
+    <div class="compare-dock-inner">
+      <div class="compare-dock-info">
+        <span class="compare-badge">1:1 맞비교</span>
+        <span>선택된 케이스: <strong id="compare-count" style="color:var(--primary);">0</strong> / 3개</span>
+      </div>
+      <div class="compare-dock-actions">
+        <button class="btn btn-primary btn-sm" id="btn-open-compare">
+          📊 스펙 1:1 맞비교 보기
+        </button>
+        <button class="btn btn-outline btn-sm" id="btn-clear-compare">
+          비우기
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detail Modal -->
+  <div class="modal-backdrop" id="detail-modal">
+    <div class="modal-box">
+      <button class="modal-close" id="modal-close">&times;</button>
+      <div class="modal-body" id="modal-content">
+        <!-- Injected by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Spec Matcher Benchmark Modal -->
+  <div class="modal-backdrop" id="match-modal">
+    <div class="modal-box" style="max-width: 680px;">
+      <button class="modal-close" id="match-modal-close">&times;</button>
+      <div class="modal-body">
+        <div class="matcher-header">
+          <div class="matcher-title-badge">AI CAREER BENCHMARK</div>
+          <h3 style="color:var(--text-primary); font-size: 22px; font-weight:800; margin: 6px 0 10px;">
+            🎯 내 스펙 실증 데이터 매칭 진단
+          </h3>
+          <p style="color:var(--text-secondary); font-size:13px; line-height: 1.5;">
+            본인의 학점과 토익 점수를 입력하면, 100인의 합격 실증 빅데이터와 비교하여 <strong>백분위 위치</strong>, <strong>유사 스펙 합격자 TOP 3</strong> 및 <strong>최적 추천 병원군</strong>을 즉시 산출합니다.
+          </p>
+        </div>
+
+        <div class="matcher-form">
+          <div class="matcher-input-grid">
+            <div class="matcher-field">
+              <label>🎓 본인 학점 (4.5 만점 기준)</label>
+              <input type="number" id="input-my-gpa" step="0.01" min="2.0" max="4.5" value="4.30" placeholder="예: 4.30">
+            </div>
+            <div class="matcher-field">
+              <label>🌐 본인 토익 점수 (무토익 시 0)</label>
+              <input type="number" id="input-my-toeic" step="5" min="0" max="990" value="910" placeholder="예: 910">
+            </div>
+            <div class="matcher-field">
+              <label>🏫 학교 위치</label>
+              <select id="input-my-loc">
+                <option value="지방" selected>지방권</option>
+                <option value="서울/수도권">서울 · 수도권</option>
+              </select>
+            </div>
+            <div class="matcher-field">
+              <label>🩺 자대병원 유무</label>
+              <select id="input-my-affil">
+                <option value="자대무" selected>자대병원 無 (지자무)</option>
+                <option value="자대유">자대병원 有</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn btn-primary btn-block" id="btn-run-match" style="margin-top: 14px; padding: 12px; font-size: 15px;">
+            ⚡ 실시간 매칭 분석 실행
+          </button>
+        </div>
+
+        <!-- Matching Results Container -->
+        <div class="matcher-results" id="matcher-results" style="display: none; margin-top: 20px;">
+          <!-- Dynamically filled by JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Comparison Modal -->
+  <div class="modal-backdrop" id="compare-modal">
+    <div class="modal-box" style="max-width: 960px;">
+      <button class="modal-close" id="compare-modal-close">&times;</button>
+      <div class="modal-body">
+        <h3 style="color:var(--text-primary); font-size: 22px; font-weight:800; margin-bottom: 16px; display:flex; align-items:center; gap:8px;">
+          <span>⚖️</span> 합격 스펙 1:1 맞비교 분석표
+        </h3>
+        <div id="compare-table-container" style="overflow-x: auto;">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QR Code Modal -->
+  <div class="modal-backdrop" id="qr-modal">
+    <div class="modal-box" style="max-width: 440px;">
+      <button class="modal-close" id="qr-modal-close">&times;</button>
+      <div class="qr-container">
+        <h3 style="color:var(--text-primary); font-size: 20px; margin-bottom: 8px;">스마트폰으로 실증 데이터 확인</h3>
+        <p style="color:var(--text-secondary); font-size:13px; margin-bottom: 20px;">
+          QR코드를 스캔하면 모바일 화면에서 실시간 검색 및 합격 후기를 바로 확인할 수 있습니다.
+        </p>
+        <div id="qrcode"></div>
+        <div style="font-size:12px; color:var(--primary); font-weight:600;" id="qr-url-text"></div>
+        <p style="font-size:11px; color:var(--text-muted); margin-top:10px;">
+          💡 PPT 발표 슬라이드에 이 QR코드를 넣으면 청중/심사위원이 직접 검증 가능합니다.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Embedded or External Data -->
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
